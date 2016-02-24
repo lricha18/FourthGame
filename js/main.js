@@ -17,7 +17,7 @@ window.onload = function () {
         game.load.image('player2', 'assets/ufo2.png');
         game.load.image('start', 'assets/start.png');
         
-        game.load.audio('finish', 'assets/cheering.wav');
+        
         game.load.audio('music', 'assets/Jupiter.wav');
         game.load.audio('bulletHit', 'assets/bulletHit.wav');
         game.load.audio('bulletFire', 'assets/bulletFire.wav');
@@ -250,8 +250,8 @@ window.onload = function () {
     
     function render()
     {
-        game.debug.body(player1);
-        game.debug.body(player2);
+        //game.debug.body(player1);
+        //game.debug.body(player2);
     }
     
     
