@@ -15,6 +15,7 @@ window.onload = function () {
         game.load.image('bullet', 'assets/bullet.png');
         game.load.image('player1', 'assets/ufo.png');
         game.load.image('player2', 'assets/ufo2.png');
+        game.load.image('start', 'assets/start.png');
         
         game.load.audio('finish', 'assets/cheering.wav');
         game.load.audio('music', 'assets/fiati.wav');
@@ -26,6 +27,7 @@ window.onload = function () {
     
     
     var background;
+    var start;
     
     var player1;
     var player2;
@@ -115,7 +117,7 @@ window.onload = function () {
         
         // Create a sprite to be the player
         player1 = game.add.sprite(0, 560, 'player1');
-        player2 = game.add.sprite(770, 560, 'player2');
+        player2 = game.add.sprite(790, 560, 'player2');
         
         //Set the anchor to the middle of the players
         player1.anchor.setTo(0.5,0.5);
@@ -142,10 +144,16 @@ window.onload = function () {
         var style = { font: "25px Verdana", fill: "#ffffff", align: "center" };
         text = game.add.text(400, 10, "Capture the Star!", style);
         text.anchor.setTo(0.5, 0.0);
+        
+        
+        start = game.add.image(0,0,'start');
+        game.paused = true;
+        game.input.onTap.addOnce(restart,this);
     }
     
     function update()
     {
+
 
         player1.body.velocity.x = 0;
         player1.body.velocity.y = 0;
@@ -286,7 +294,7 @@ window.onload = function () {
         
         // Recreate players at start
         player1 = game.add.sprite(0, 560, 'player1');
-        player2 = game.add.sprite(770, 560, 'player2');
+        player2 = game.add.sprite(790, 560, 'player2');
         
         //Set the anchor to the middle of the players
         player1.anchor.setTo(0.5,0.5);
@@ -328,7 +336,7 @@ window.onload = function () {
         bullet.kill();
         player2.kill();
         
-        player2.x=770;
+        player2.x=790;
         player2.y=560;
         player2.revive(); 
         sound = game.sound.play('bulletHit');
@@ -380,6 +388,12 @@ window.onload = function () {
             }
         }
 
+    }
+    
+    function restart()
+    {
+        start.visible = false;
+        game.paused = false;
     }
     
 };
