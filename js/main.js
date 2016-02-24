@@ -149,6 +149,7 @@ window.onload = function () {
         
         start = game.add.image(0,0,'start');
         game.paused = true;
+        music.paused=true;
         game.input.onTap.addOnce(restart,this);
     }
     
@@ -409,18 +410,20 @@ window.onload = function () {
         player1.y=560;
         player2.x=790;
         player2.y=560;
+        music.paused= false;
     }
     
     function endGame()
     {
+        music.paused= true;
+        bullets.callAll('kill');
+        enemyBullets.callAll('kill');
         if (score1 >=20)
             {
             var style = { font: "25px Verdana", fill: "#ffffff", align: "center" };
             winText = game.add.text(100, 200, "Player 1 Wins! Click to play again!", style);
             game.paused = true;
             game.input.onTap.addOnce(restart,this);
-            bullets.callAll('kill');
-            enemyBullets.callAll('kill');
             }
         else if(score2 >=20)
             {
@@ -428,8 +431,6 @@ window.onload = function () {
             winText = game.add.text(100, 200, "Player 2 Wins! Click to play again!", style);
             game.paused = true;
             game.input.onTap.addOnce(restart,this);
-            bullets.callAll('kill');
-            enemyBullets.callAll('kill');
             }
     }
     
