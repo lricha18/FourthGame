@@ -18,7 +18,7 @@ window.onload = function () {
         game.load.image('start', 'assets/start.png');
         
         game.load.audio('finish', 'assets/cheering.wav');
-        game.load.audio('music', 'assets/fiati.wav');
+        game.load.audio('music', 'assets/Jupiter.wav');
         game.load.audio('bulletHit', 'assets/bulletHit.wav');
         game.load.audio('bulletFire', 'assets/bulletFire.wav');
         game.load.audio('collision', 'assets/collision.wav');
