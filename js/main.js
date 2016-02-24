@@ -44,6 +44,7 @@ window.onload = function () {
     var enemyBullet;
     
     var text;
+    var winText;
     var sound;
     
     //For Score Text
@@ -153,7 +154,10 @@ window.onload = function () {
     
     function update()
     {
-
+        if(score1 >=20 || score2 >=20)
+            {
+                endGame();
+            }
 
         player1.body.velocity.x = 0;
         player1.body.velocity.y = 0;
@@ -343,6 +347,7 @@ window.onload = function () {
         
         score1 += 1;
         scoreText1.text = scoreString1 + score1;
+        
     }
     
     
@@ -394,6 +399,38 @@ window.onload = function () {
     {
         start.visible = false;
         game.paused = false;
+        score1 =0;
+        score2 =0;
+        scoreText1.text = scoreString1 + score1;
+        scoreText2.text = scoreString2 + score2;
+        winText.visible = false;
+        
+        player1.x=0;
+        player1.y=560;
+        player2.x=790;
+        player2.y=560;
+    }
+    
+    function endGame()
+    {
+        if (score1 >=20)
+            {
+            var style = { font: "25px Verdana", fill: "#ffffff", align: "center" };
+            winText = game.add.text(100, 200, "Player 1 Wins! Click to play again!", style);
+            game.paused = true;
+            game.input.onTap.addOnce(restart,this);
+            bullets.callAll('kill');
+            enemyBullets.callAll('kill');
+            }
+        else if(score2 >=20)
+            {
+            var style = { font: "25px Verdana", fill: "#ffffff", align: "center" };
+            winText = game.add.text(100, 200, "Player 2 Wins! Click to play again!", style);
+            game.paused = true;
+            game.input.onTap.addOnce(restart,this);
+            bullets.callAll('kill');
+            enemyBullets.callAll('kill');
+            }
     }
     
 };
