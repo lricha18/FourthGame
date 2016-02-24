@@ -30,9 +30,11 @@ window.onload = function () {
     var player1;
     var player2;
     
+    //Input from players
     var cursors;
     var cursors2;
     
+    //Groups
     var stars;
     var bullets;
     var enemyBullets;
@@ -42,21 +44,22 @@ window.onload = function () {
     var text;
     var sound;
     
+    //For Score Text
     var score1 = 0;
     var scoreString1;
     var scoreText1;
-    
     var score2 = 0;
     var scoreString2;
     var scoreText2;
     
     var speed = 4;
-    var starGravity = 10;
     var music;
     
     //Used so player cannot fire continuously 
     var player1FireCounter = 0;
     var player2FireCounter = 0;
+    
+    //Players' fire buttons and lock spacebar
     var player1FireButton;
     var player2FireButton;
     var killSpace;
@@ -278,6 +281,7 @@ window.onload = function () {
         player1.kill();
         player2.kill();
         
+        
         sound = game.sound.play('collision');
         
         // Recreate players at start
@@ -300,26 +304,17 @@ window.onload = function () {
     
     
    //When player 1 is hit by a bullet
-    function player1Hit(bullet, player1)
+    function player1Hit(player1, bullet)
     {
         //When a bullet hits player 1 both are killed
         bullet.kill();
-        player1.destroy();
+        player1.kill();
         
-        //Must replace player at start
-        player1 = game.add.sprite(0, 560, 'player1');
-        
-        //Set the anchor to the middle of the players
-        player1.anchor.setTo(0.5,0.5);
-        
-        // Turn on the arcade physics engine for this sprite.
-        game.physics.enable(player1, Phaser.Physics.ARCADE);
-        
-        //Makes it so the players may not leave the screen
-        player1.body.collideWorldBounds = true;
-        
+        player1.x=0;
+        player1.y=560;    
+        player1.revive();
         sound = game.sound.play('bulletHit');
-        
+
         //Increase the score
         score2 +=1;
         scoreText2.text = scoreString2 + score2;
@@ -327,25 +322,19 @@ window.onload = function () {
     }
     
     //When player 2 is hit by a bullet
-    function player2Hit(bullet, player2)
+    function player2Hit(player2, bullet)
     {
         //When bullet hits player 2 both are killed
         bullet.kill();
         player2.kill();
         
-        //Must replace player 2 at start
-        player2 = game.add.sprite(770, 560, 'player2');
-        
-        //Set the anchor to the middle of the players
-        player2.anchor.setTo(0.5,0.5);
-        
-        game.physics.enable(player2, Phaser.Physics.ARCADE);
-        player2.body.collideWorldBounds = true;
-        
+        player2.x=770;
+        player2.y=560;
+        player2.revive(); 
         sound = game.sound.play('bulletHit');
         
         score1 += 1;
-        scoreText2.text = scoreString1 + score1;
+        scoreText1.text = scoreString1 + score1;
     }
     
     
@@ -364,6 +353,7 @@ window.onload = function () {
                 //  And fire it
                 bullet.reset(player1.x, player1.y + 8);
                 game.physics.arcade.moveToObject(bullet,player2, 400);
+                sound = game.sound.play('bulletFire');
                 player1FireCounter = game.time.now + 400;
             }
         }
@@ -385,17 +375,11 @@ window.onload = function () {
                 //  And fire it
                 enemyBullet.reset(player2.x, player2.y + 8);
                 game.physics.arcade.moveToObject(enemyBullet,player1, 400);
+                sound = game.sound.play('bulletFire');
                 player2FireCounter = game.time.now + 400;
             }
         }
 
     }
     
-/*    function resetBullet (bullet)
-    {
-
-        //  Called if the bullet goes out of the screen
-        bullet.kill();
-
-    }*/
 };
