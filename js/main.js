@@ -1,138 +1,144 @@
-window.onload = function() {
-    // You might want to start with a template that uses GameStates:
-    //     https://github.com/photonstorm/phaser/tree/master/resources/Project%20Templates/Basic
-    
-    // You can copy-and-paste the code from any of the examples at http://examples.phaser.io here.
-    // You will need to change the fourth parameter to "new Phaser.Game()" from
-    // 'phaser-example' to 'game', which is the id of the HTML element where we
-    // want the game to go.
-    // The assets (and code) can be found at: https://github.com/photonstorm/phaser/tree/master/examples/assets
-    // You will need to change the paths you pass to "game.load.image()" or any other
-    // loading functions to reflect where you are putting the assets.
-    // All loading functions will typically all be found inside "preload()".
-    
+window.onload = function () {
+
     "use strict";
     
-    var game = new Phaser.Game( 800, 600, Phaser.CANVAS, 'game', { preload: preload, create: create, update: update, render: render } );
+    var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'game', { preload: preload, create: create, update: update, render: render });
     
     
     
     function preload() {
         // Load an image and call it 'logo'.
-        game.load.image( 'logo', 'assets/phaser.png' );
-        game.load.image( 'background','assets/background.jpg');
-        //game.load.spritesheet('player', 'assets/dude.png',32,48);
-        //game.load.spritesheet('player2', 'assets/dude2.png',32,48);
+        game.load.image('logo', 'assets/phaser.png');
+        game.load.image('background', 'assets/background.jpg');
         game.load.image('ledge', 'assets/brick2.png');
         game.load.image('star', 'assets/star2.png');
-        game.load.audio('finish','assets/cheering.wav');
-        game.load.audio('music', 'assets/fiati.wav');
+        game.load.image('bullet', 'assets/bullet.png');
         game.load.image('player1', 'assets/ufo.png');
         game.load.image('player2', 'assets/ufo2.png');
+        
+        game.load.audio('finish', 'assets/cheering.wav');
+        game.load.audio('music', 'assets/fiati.wav');
+        game.load.audio('bulletHit', 'assets/bulletHit.wav');
+        game.load.audio('bulletFire', 'assets/bulletFire.wav');
+        game.load.audio('collision', 'assets/collision.wav');
+        game.load.audio('capture', 'assets/capture.wav');
     }
     
     
     var background;
-    var player;
+    
+    var player1;
     var player2;
-    var facing = 'left';
-    var facing2 = 'left';
+    
     var cursors;
     var cursors2;
+    
     var stars;
+    var bullets;
+    var bullet;
+    
     var text;
     var sound;
-    var score1 = 0;
-    var score1String;
-    var score2 = 0;
-    var score2String;
-    var score1Text;
-    var score2Text;
-    var speed = 4;
     
-    var starGravity = 0;
+    var score1 = 0;
+    var scoreString1;
+    var scoreText1;
+    
+    var score2 = 0;
+    var scoreString2;
+    var scoreText2;
+    
+    var speed = 4;
+    var starGravity = 10;
     var music;
+    
+    //Used so player cannot fire continuously 
+    var player1FireCounter = 0;
+    var player2FireCounter = 0;
+    var player1FireButton;
+    var killSpace;
     
     
     function create() {
         //Change the background image and scale to fit screen
-        game.world.setBounds(0,0, 800,600);
-        background = game.add.tileSprite(0,0,800,600,'background');
+        game.world.setBounds(0, 0, 800, 600);
+        background = game.add.tileSprite(0, 0, 800, 600, 'background');
         
-        
-        //Checks bounds collisions with all sides except the sky
-        game.physics.arcade.checkCollision.up = false;
-        
-
+        game.physics.startSystem(game, Phaser.Physics.ARCADE);
+    
         //Creates the star group to be collected
         stars = game.add.physicsGroup();
         var star;
         stars.physicsBodyType = Phaser.Physics.ARCADE;
         
+        //  Our bullet group
+        bullets = game.add.group();
+        bullets.enableBody = true;
+        bullets.physicsBodyType = Phaser.Physics.ARCADE;
+        bullets.createMultiple(30, 'bullet');
+        bullets.setAll('anchor.x', 0.5);
+        bullets.setAll('anchor.y', 1);
+        bullets.setAll('outOfBoundsKill', true);
+        bullets.setAll('checkWorldBounds', true);
+        
         //Creates the initial star with world out of bounds detection
-        star = stars.create(400,300,'star');
-        star.checkWorldBounds = true;
+        star = stars.create(400, 300, 'star');
         game.physics.enable(stars, Phaser.Physics.ARCADE);
         
         //Creates the background Music
         music = game.add.audio('music');
         music.play();
-        music.loop = true;
+        //music.loop = true;
         
         
         //  The score String is made and displayed here
-        score1String = 'Player 1 : ';
-        score1Text = game.add.text(10, 10, score1String + score1, { font: '34px Arial', fill: '#fff' });
-        score2String = 'Player 2 : ' ;
-        score2Text = game.add.text(620, 10, score2String + score2, { font: '34px Arial', fill: '#fff' });
+        scoreString1 = 'Player 1 : ';
+        scoreText1 = game.add.text(10, 10, scoreString1 + score1, { font: '34px Arial', fill: '#fff' });
+        scoreString2 = 'Player 2 : ';
+        scoreText2 = game.add.text(600, 10, scoreString2 + score2, { font: '34px Arial', fill: '#fff' });
         
         // Create a sprite to be the player
-        player = game.add.sprite(0,560, 'player1');
-        player2 = game.add.sprite(770,560,'player2');
+        player1 = game.add.sprite(0, 560, 'player1');
+        player2 = game.add.sprite(770, 560, 'player2');
         
         // Turn on the arcade physics engine for this sprite.
-        game.physics.enable( player, Phaser.Physics.ARCADE );
-        game.physics.enable( player2, Phaser.Physics.ARCADE );
+        game.physics.enable(player1, Phaser.Physics.ARCADE);
+        game.physics.enable(player2, Phaser.Physics.ARCADE);
         
         //Makes it so the players may not leave the screen
-        player.body.collideWorldBounds = true;
+        player1.body.collideWorldBounds = true;
         player2.body.collideWorldBounds = true;
         
-
+        killSpace = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        
         //Makes the controls the arrow keys on the keyboard
         cursors = game.input.keyboard.createCursorKeys();
-        cursors2 = {up: game.input.keyboard.addKey(Phaser.Keyboard.W), down: game.input.keyboard.addKey(Phaser.Keyboard.S), left: game.input.keyboard.addKey(Phaser.Keyboard.A), right: game.input.keyboard.addKey(Phaser.Keyboard.D)};
+        player1FireButton = game.input.keyboard.addKey(Phaser.Keyboard.M);
+        cursors2 = {up: game.input.keyboard.addKey(Phaser.Keyboard.W), down: game.input.keyboard.addKey(Phaser.Keyboard.S), left: game.input.keyboard.addKey(Phaser.Keyboard.A), right: game.input.keyboard.addKey(Phaser.Keyboard.D), fire: game.input.keyboard.addKey(Phaser.Keyboard.F)};
         
         // Add some text using a CSS style.
         // Center it in X, and position its top 15 pixels from the top of the world.
         var style = { font: "25px Verdana", fill: "#ffffff", align: "center" };
-        text = game.add.text( 400, 10, "Capture the Star!", style );
-        text.anchor.setTo( 0.5, 0.0 );
-        text.fixedToCamera=true;
+        text = game.add.text(400, 10, "Capture the Star!", style);
+        text.anchor.setTo(0.5, 0.0);
     }
     
-    function update() {
-        
-        //If player makes it to the end of the world
-        if (game.camera.x >=999000)
-            {
-                var style = { font: "25px Verdana", fill: "#ffffff", align: "center" };
-                text = game.add.text( game.camera.x + 400, 50, "You made it to the end with a Great Score!", style );
-                text.anchor.setTo( 0.5, 0.0 );
-                game.paused=true;
-            }
-        
-        //game.physics.arcade.collide(player,ledges);
-        //game.physics.arcade.collide(stars,ledges);
-        player.body.velocity.x = 0;
-        player.body.velocity.y = 0;
-        player2.body.velocity.y=0;
-        player2.body.velocity.x=0;
+    function update()
+    {
+
+        player1.body.velocity.x = 0;
+        player1.body.velocity.y = 0;
+        player2.body.velocity.y = 0;
+        player2.body.velocity.x = 0;
        
-        //Checks if the player has hit a star
-        game.physics.arcade.collide(player,stars,hitStar,null,this);
-        game.physics.arcade.collide(player2,stars,hitStar2,null,this);
         
+        //Checks if the player has hit a star
+        game.physics.arcade.overlap(player1, stars, hitStar1, null, this);
+        game.physics.arcade.overlap(player2, stars, hitStar2, null, this);
+        
+        game.physics.arcade.overlap(player1, player2,resetPlayers, null, this);
+        //game.physics.arcade.overlap(bullets, player1, player1Hit, null, this);
+        //game.physics.arcade.overlap(bullets, player2, player2Hit, null, this);
 
         
         //Loops the Background Music
@@ -151,25 +157,25 @@ window.onload = function() {
         //Player 1 input
         if (cursors.left.isDown)
         {
-            player.x -= speed;
-            player.angle = -15;
+            player1.x -= speed;
+            player1.angle = -15;
         }
-        else if (cursors.right.isDown)
+        if (cursors.right.isDown)
         {
-            player.x += speed;
-            player.angle = 15;
+            player1.x += speed;
+            player1.angle = 15;
         }
-        else if (cursors.up.isDown)
+        if (cursors.up.isDown)
         {
-            player.y -= speed;
+            player1.y -= speed;
         }
-        else if (cursors.down.isDown)
+        if (cursors.down.isDown)
         {
-            player.y += speed;
+            player1.y += speed;
         }
-        else
+        if (cursors.up.isDown == false && cursors.down.isDown == false && cursors.left.isDown == false && cursors.right.isDown == false)
         {
-            player.angle = 0;
+            player1.angle = 0;
         }
         
         //Player 2 input
@@ -178,63 +184,33 @@ window.onload = function() {
             player2.x -= speed;
             player2.angle = -15;
         }
-        else if (cursors2.right.isDown)
+        if (cursors2.right.isDown)
         {
             player2.x += speed;
             player2.angle = 15;
         }
-        else if (cursors2.up.isDown)
+        if (cursors2.up.isDown)
         {
             player2.y -= speed;
         }
-        else if (cursors2.down.isDown)
+        if (cursors2.down.isDown)
         {
             player2.y += speed;
         }
-        else
+        if (cursors2.up.isDown == false && cursors2.down.isDown == false && cursors2.left.isDown == false && cursors2.right.isDown == false) 
         {
             player2.angle = 0;
         }
         
     }
     
-    //Action occurs when the player hits the star
-    function hitStar(player,star)
+
+    
+    function render()
     {
-        
-        //Destroys old star and creats new one to be collected.
-        //Updates Score for collected star.
-        star.destroy();
-        sound = game.sound.play('finish');  
-        star = stars.create(random,120,'star');
-        score1 += 1;
-        score1Text.text = score1String + score1;
-        
-
+        game.debug.body(player1);
+        game.debug.body(player2);
     }
-    
-    function render() {
-
-    //game.debug.cameraInfo(game.camera, 32, 32);
-
-}
-    
-    
-    //Event when a star is missed 
-    //Kills the current star and makes a new one fall within the camera window
-    function starMissed(star)
-    {
-        star.kill();
-        var random =game.rnd.integerInRange(game.camera.x+200,game.camera.x+800);
-        star = stars.create(random,120,'star');
-        star.body.allowGravity=true;
-        star.body.gravity.y=starGravity;
-        star.checkWorldBounds = true;
-        star.events.onOutOfBounds.add(starMissed, this );
-        //score-=5;
-        //scoreText.text = scoreString + score
-    }
-    
     
     
     //Loops the Background Music
@@ -247,43 +223,139 @@ window.onload = function() {
     }
     
     //Player 1 captured the star
-    function hitStar()
+    function hitStar1(player1, star)
     {
-        star.kill()
+        sound = game.sound.play('capture');
+        star.destroy();
         var randomX = game.rnd.integerInRange(30,770);
         var randomY = game.rnd.integerInRange(100,570);
         star = stars.create(randomX, randomY, 'star');
-        score1 +=1;
-        score1Text.text = score1String + score1;
+        score1 += 1;
+        scoreText1.text = scoreString1 + score1;
     }
     
     //Player 2 capture the star
-    function hitStar2()
+    function hitStar2(player2, star)
     {
-        star.kill()
+        sound = game.sound.play('capture');
+        star.destroy();
         var randomX = game.rnd.integerInRange(30,770);
         var randomY = game.rnd.integerInRange(100,570);
         star = stars.create(randomX, randomY, 'star');
-        score2 +=1;
-        score2Text.text = score2String + score2;
+        score2 += 1;
+        scoreText2.text = scoreString2 + score2;
     }
     
     
-   
-    
-/*    function endGame()
+    function resetPlayers()
     {
+        player1.kill();
+        player2.kill();
         
-        player.kill();
-        //Put Player Losing Screen Here 
+        sound = game.sound.play('collision');
         
-         var style = { font: "25px Verdana", fill: "#000000", align: "center" };
-        text = game.add.text( game.camera.x + 400, 200, "You died! Refresh to play again", style );
-        text.anchor.setTo( 0.5, 0.0 );
-        game.paused=true;
-	
+        // Recreate players at start
+        player1 = game.add.sprite(0, 560, 'player1');
+        player2 = game.add.sprite(770, 560, 'player2');
+        
+        // Turn on the arcade physics engine for this sprite.
+        game.physics.enable(player1, Phaser.Physics.ARCADE);
+        game.physics.enable(player2, Phaser.Physics.ARCADE);
+        
+        //Makes it so the players may not leave the screen
+        player1.body.collideWorldBounds = true;
+        player2.body.collideWorldBounds = true;
+        
+    }
+    
+    
+/*    
+    function player1Hit(bullet, player1)
+    {
+        //When a bullet hits player 1 both are killed
+        bullet.kill();
+        player1.kill();
+        
+        //Must replace player at start
+        player1 = game.add.sprite(0, 560, 'player1');
+        
+        // Turn on the arcade physics engine for this sprite.
+        game.physics.enable(player1, Phaser.Physics.ARCADE);
+        
+        //Makes it so the players may not leave the screen
+        player1.body.collideWorldBounds = true;
+        
+        sound = game.sound.play('bulletHit');
+        
+        //Increase the score
+        score2 +=1;
+        scoreText2.text = scoreString2 + score2;
+        
+    }
+    
+    function player2Hit(bullet player2)
+    {
+        //When bullet hits player 2 both are killed
+        bullet.kill();
+        player2.kill();
+        
+        //Must replace player 2 at start
+        player2 = game.add.sprite(770, 560, 'player2');
+        game.physics.enable(player2, Phaser.Physics.ARCADE);
+        player2.body.collideWorldBounds = true;
+        
+        sound = game.sound.play('bulletHit');
+        
+        score1 += 1;
+        scoreText2.text = scoreString1 + score1;
+    }
+    
+    
+    function fireBullet1() 
+    {
+
+        //  To avoid them being allowed to fire too fast we set a time limit
+        if (game.time.now > player1FireCounter)
+        {
+            //  Grab the first bullet we can from the pool
+            bullet = bullets.getFirstExists(false);
+
+            if (bullet)
+            {
+                //  And fire it
+                bullet.reset(player.x, player.y + 8);
+                bullet.body.velocity.y = -400;
+                player1FireCounter = game.time.now + 200;
+            }
+        }
+
+    }
+    
+        function fireBullet2() 
+    {
+
+        //  To avoid them being allowed to fire too fast we set a time limit
+        if (game.time.now > player2FireCounter)
+        {
+            //  Grab the first bullet we can from the pool
+            bullet = bullets.getFirstExists(false);
+
+            if (bullet)
+            {
+                //  And fire it
+                bullet.reset(player.x, player.y + 8);
+                bullet.body.velocity.y = -400;
+                player2FireCounter = game.time.now + 200;
+            }
+        }
+
+    }
+    
+    function resetBullet (bullet)
+    {
+
+        //  Called if the bullet goes out of the screen
+        bullet.kill();
+
     }*/
-    
-    
-    
 };
