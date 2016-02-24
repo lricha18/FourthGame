@@ -35,7 +35,9 @@ window.onload = function () {
     
     var stars;
     var bullets;
+    var enemyBullets;
     var bullet;
+    var enemyBullet;
     
     var text;
     var sound;
@@ -56,6 +58,7 @@ window.onload = function () {
     var player1FireCounter = 0;
     var player2FireCounter = 0;
     var player1FireButton;
+    var player2FireButton;
     var killSpace;
     
     
@@ -71,7 +74,7 @@ window.onload = function () {
         var star;
         stars.physicsBodyType = Phaser.Physics.ARCADE;
         
-        //  Our bullet group
+        //  Player 1 bullet group
         bullets = game.add.group();
         bullets.enableBody = true;
         bullets.physicsBodyType = Phaser.Physics.ARCADE;
@@ -80,6 +83,16 @@ window.onload = function () {
         bullets.setAll('anchor.y', 1);
         bullets.setAll('outOfBoundsKill', true);
         bullets.setAll('checkWorldBounds', true);
+        
+        // Player 2 bullet group
+        enemyBullets = game.add.group();
+        enemyBullets.enableBody = true;
+        enemyBullets.physicsBodyType = Phaser.Physics.ARCADE;
+        enemyBullets.createMultiple(30, 'bullet');
+        enemyBullets.setAll('anchor.x', 0.5);
+        enemyBullets.setAll('anchor.y', 1);
+        enemyBullets.setAll('outOfBoundsKill', true);
+        enemyBullets.setAll('checkWorldBounds', true);
         
         //Creates the initial star with world out of bounds detection
         star = stars.create(400, 300, 'star');
@@ -101,6 +114,10 @@ window.onload = function () {
         player1 = game.add.sprite(0, 560, 'player1');
         player2 = game.add.sprite(770, 560, 'player2');
         
+        //Set the anchor to the middle of the players
+        player1.anchor.setTo(0.5,0.5);
+        player2.anchor.setTo(0.5,0.5);
+        
         // Turn on the arcade physics engine for this sprite.
         game.physics.enable(player1, Phaser.Physics.ARCADE);
         game.physics.enable(player2, Phaser.Physics.ARCADE);
@@ -114,7 +131,8 @@ window.onload = function () {
         //Makes the controls the arrow keys on the keyboard
         cursors = game.input.keyboard.createCursorKeys();
         player1FireButton = game.input.keyboard.addKey(Phaser.Keyboard.M);
-        cursors2 = {up: game.input.keyboard.addKey(Phaser.Keyboard.W), down: game.input.keyboard.addKey(Phaser.Keyboard.S), left: game.input.keyboard.addKey(Phaser.Keyboard.A), right: game.input.keyboard.addKey(Phaser.Keyboard.D), fire: game.input.keyboard.addKey(Phaser.Keyboard.F)};
+        player2FireButton = game.input.keyboard.addKey(Phaser.Keyboard.F)
+        cursors2 = {up: game.input.keyboard.addKey(Phaser.Keyboard.W), down: game.input.keyboard.addKey(Phaser.Keyboard.S), left: game.input.keyboard.addKey(Phaser.Keyboard.A), right: game.input.keyboard.addKey(Phaser.Keyboard.D)};
         
         // Add some text using a CSS style.
         // Center it in X, and position its top 15 pixels from the top of the world.
@@ -137,8 +155,8 @@ window.onload = function () {
         game.physics.arcade.overlap(player2, stars, hitStar2, null, this);
         
         game.physics.arcade.overlap(player1, player2,resetPlayers, null, this);
-        //game.physics.arcade.overlap(bullets, player1, player1Hit, null, this);
-        //game.physics.arcade.overlap(bullets, player2, player2Hit, null, this);
+        game.physics.arcade.overlap(player1, enemyBullets, player1Hit, null, this);
+        game.physics.arcade.overlap(player2, bullets, player2Hit, null, this);
 
         
         //Loops the Background Music
@@ -177,6 +195,10 @@ window.onload = function () {
         {
             player1.angle = 0;
         }
+        if (player1FireButton.isDown)
+            {
+                fireBullet1();
+            }
         
         //Player 2 input
         if (cursors2.left.isDown)
@@ -201,6 +223,10 @@ window.onload = function () {
         {
             player2.angle = 0;
         }
+        if (player2FireButton.isDown)
+            {
+                fireBullet2();
+            }
         
     }
     
@@ -258,6 +284,10 @@ window.onload = function () {
         player1 = game.add.sprite(0, 560, 'player1');
         player2 = game.add.sprite(770, 560, 'player2');
         
+        //Set the anchor to the middle of the players
+        player1.anchor.setTo(0.5,0.5);
+        player2.anchor.setTo(0.5,0.5);
+        
         // Turn on the arcade physics engine for this sprite.
         game.physics.enable(player1, Phaser.Physics.ARCADE);
         game.physics.enable(player2, Phaser.Physics.ARCADE);
@@ -269,15 +299,18 @@ window.onload = function () {
     }
     
     
-/*    
+   //When player 1 is hit by a bullet
     function player1Hit(bullet, player1)
     {
         //When a bullet hits player 1 both are killed
         bullet.kill();
-        player1.kill();
+        player1.destroy();
         
         //Must replace player at start
         player1 = game.add.sprite(0, 560, 'player1');
+        
+        //Set the anchor to the middle of the players
+        player1.anchor.setTo(0.5,0.5);
         
         // Turn on the arcade physics engine for this sprite.
         game.physics.enable(player1, Phaser.Physics.ARCADE);
@@ -293,7 +326,8 @@ window.onload = function () {
         
     }
     
-    function player2Hit(bullet player2)
+    //When player 2 is hit by a bullet
+    function player2Hit(bullet, player2)
     {
         //When bullet hits player 2 both are killed
         bullet.kill();
@@ -301,6 +335,10 @@ window.onload = function () {
         
         //Must replace player 2 at start
         player2 = game.add.sprite(770, 560, 'player2');
+        
+        //Set the anchor to the middle of the players
+        player2.anchor.setTo(0.5,0.5);
+        
         game.physics.enable(player2, Phaser.Physics.ARCADE);
         player2.body.collideWorldBounds = true;
         
@@ -311,6 +349,7 @@ window.onload = function () {
     }
     
     
+    //Fires a bullet from player 1
     function fireBullet1() 
     {
 
@@ -323,35 +362,36 @@ window.onload = function () {
             if (bullet)
             {
                 //  And fire it
-                bullet.reset(player.x, player.y + 8);
-                bullet.body.velocity.y = -400;
-                player1FireCounter = game.time.now + 200;
+                bullet.reset(player1.x, player1.y + 8);
+                game.physics.arcade.moveToObject(bullet,player2, 400);
+                player1FireCounter = game.time.now + 400;
             }
         }
 
     }
     
-        function fireBullet2() 
+    //Fires a bullet from player 2
+    function fireBullet2() 
     {
 
         //  To avoid them being allowed to fire too fast we set a time limit
         if (game.time.now > player2FireCounter)
         {
             //  Grab the first bullet we can from the pool
-            bullet = bullets.getFirstExists(false);
+            enemyBullet = enemyBullets.getFirstExists(false);
 
-            if (bullet)
+            if (enemyBullet)
             {
                 //  And fire it
-                bullet.reset(player.x, player.y + 8);
-                bullet.body.velocity.y = -400;
-                player2FireCounter = game.time.now + 200;
+                enemyBullet.reset(player2.x, player2.y + 8);
+                game.physics.arcade.moveToObject(enemyBullet,player1, 400);
+                player2FireCounter = game.time.now + 400;
             }
         }
 
     }
     
-    function resetBullet (bullet)
+/*    function resetBullet (bullet)
     {
 
         //  Called if the bullet goes out of the screen
