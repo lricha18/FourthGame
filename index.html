@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Capture the Star!</title>
+    <title>Numbers are FUN</title>
     <script src="js/phaser.js"></script>
     <script src="js/main.js"></script>
 
@@ -22,63 +22,63 @@ body
 <body>
 <div id="game"></div>
 <div id="readme">
-<h2>Capture the Star</h2>
+<h2>Learn to count to 10!</h2>
 <ul>
 
 <li><strong>High Concept:</strong>
-Be the first player to accumulate 20 points either by capturing the star or shooting the other player.
+Control the space ship to collect the numbers in order.
 </li>
 
 <li><strong>Player Experience Goals:</strong>
-Some experience with capture the flag and shooting games might be needed.
+Players do not necessarily need to know how to count to ten but some knowledge of what numbers are would help.
 </li>
 
 <li><strong>Genre:</strong>
-This game is a two person arcade game.
+This is a children's learning game.
 </li>
 
 <li><strong>Game play:</strong>
-This game supports two players on a single keyboard. Player 1 flies their player with the arrow keys and fires bullets with the M key. Player 2 flies around using the combination of the WASD keys corresponding to up, left, down, and right respectively and fires bullets with the F key. This game detects collisions between the two players and resets them to the starting positions. The game also detects a player colliding with the star which will increase their score and create a new star at a random location on the screen. Lastly, this game detects a bullet hitting a player. When this happens, the shooter's score increases, and the player hit is reset to the starting position.
+This game supports one player who my fly around the screen searching for the numbers 1-10. The game is able to detect if the player is picking up the numbers in order. If a number is picked up in order, a yay sound will play, if not a buzzer sound will play. When a player finishes, they are congragulated on their counting skills and are asked if they would like to play again. If they click the mouse the game resets. 
 </li>
 
 <li><strong>Prototype goal:</strong>
-This prototype is to create a game with the capture objective. Also, this game was made to learn how to fire projectiles at other players and detect collisions.
+This prototype is to create a simple working version of a game where a player may collect things in a certain order. Numbers can be substituted for letters at a later time. 
 </li>
 
 <li><strong>Features:</strong>
-2 Players, each can fly a UFO around and shoot at each other while capturing a star.
+Game a finite state machine that detects if a player has collected the numbers in the correct order or not. The game may also be replayed an infinite amount of times because the numbers are randomly placed throughout the world.
 </li>
 
 <li><strong>Setting/Premise:</strong>
-This game takes place at the edge of the Andromeda galaxy.
+This game takes place in a grassy field in the state of Oregon
 </li>
 
 <li><strong>Story:</strong>
-The spacecrafts are out hunting stars to collect when they encounter each other, so they fight to collect the most stars. 
+The spacecraft is trying to figure out how the strange symbols around the world and with the help of the player they learn how to count together.
 </li>
 
 <li><strong>Target Audience:</strong>
-This game targets an audience of children and adults of all ages. 
+This game targets an audience of children ages 4 and under.
 </li>
 
 <li><strong>Play time:</strong>
-2-5 Minutes. Can be replayed multiple times.
+1-5 Minutes depending on counting skills. Can be replayed multiple times.
 </li>
 
 <li><strong>Strategies:</strong>
-The best strategy is not to fly straight toward the stars. A player must take into account the position of the other player, where their bullets are, and where the star is, if they plan to win this game. 
+The only real strategy other than collecting the numbers in order is remembering where each number is as you fly by it.
 </li>
 
 <li><strong>Prototype Assets:</strong>  
 https://ia700807.us.archive.org/20/items/Holst-ThePlanets/Jupiter.mp3 - Background music
-SoundBible - explosion sounds, bullet fire sound
-Phaser assets/sprites/ufo.png  - UFO 1 and 2
-http://www.space-images.com/wallpapers/galaxies/m31/Andromeda_800x600.jpg - background
+http://s3.thingpic.com/images/zp/timHgbybX5e9UqMUf6oYyVQM.jpeg - numbers 
+Phaser assets/sprites/ufo.png  - UFO 1
+Windows backgrounds - background
     
 </li>
 
 <li><strong>Prototype Closest Other Game:</strong>
-This game is most close to the Invaders phaser example where the firing of bullets code was used as a basis for the shooting mechanic. 
+This game is most close to the Phaser Camera/follow styles example.
 </li>
 
 </ul>
